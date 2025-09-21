@@ -31,24 +31,7 @@
       ],
       "RATING": 7.5,
       "CATEGORY": "Horror",
-      "POSTER": "the_conjuring.jpg"
-    }
-  },
-  {
-    "Movie": "Interstellar",
-    "PROP": {
-      "LANGUAGE": [
-        "English"
-      ],
-      "RELEASE DATE": "2014-11-07T00:00:00",
-      "PRICE": 300,
-      "CAST": [
-        "Matthew McConaughey",
-        "Anne Hathaway"
-      ],
-      "RATING": 8.6,
-      "CATEGORY": "Sci-Fi",
-      "POSTER": "interstellar.jpg"
+      "POSTER": "conjuring.jpg"
     }
   },
   {
@@ -65,7 +48,7 @@
       ],
       "RATING": 6.5,
       "CATEGORY": "Horror",
-      "POSTER": "annabelle.jpg"
+      "POSTER": "ann.jpg"
     }
   },
   {
@@ -82,7 +65,7 @@
       ],
       "RATING": 6.9,
       "CATEGORY": "Comedy",
-      "POSTER": "the_mask.jpg"
+      "POSTER": "mask.jpg"
     }
   },
   {

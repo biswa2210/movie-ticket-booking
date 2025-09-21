@@ -3,20 +3,40 @@ import json
 import os
 import firebase_admin
 from firebase_admin import credentials, auth as admin_auth
-# Initialize Flask app
-app = Flask(__name__, template_folder='../FRONTEND', static_folder='../FRONTEND')
-DATA_FILE = '../LDB/movies.json'
 
+# -------------------------------
+# Paths and directories
+# -------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # folder where app.py is
+FRONTEND_DIR = os.path.join(BASE_DIR, '../FRONTEND')
+STATIC_DIR = FRONTEND_DIR
+DATA_FILE = os.path.join(BASE_DIR, '../LDB/movies.json')
+POSTERS_DIR = os.path.join(BASE_DIR, '../LDB/POSTERS')
+SERVICE_ACCOUNT_PATH = os.path.join(BASE_DIR, 'serviceAccountKey.json')
+
+# -------------------------------
+# Initialize Flask app
+# -------------------------------
+app = Flask(__name__, template_folder=FRONTEND_DIR, static_folder=STATIC_DIR)
+
+# -------------------------------
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate('serviceAccountKey.json')  # Ensure this file is in your API folder
+# -------------------------------
+cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
 firebase_admin.initialize_app(cred)
 
-# Helper function to read movies
+# -------------------------------
+# Helper functions
+# -------------------------------
 def read_movies():
     if not os.path.exists(DATA_FILE):
         return []
-    with open(DATA_FILE, 'r') as f:
+    with open(DATA_FILE, 'r', encoding='utf-8') as f:
         return json.load(f)
+
+# -------------------------------
+# Routes
+# -------------------------------
 
 # Home page showing all movies
 @app.route('/')
@@ -45,14 +65,19 @@ def add_movie():
     movies = read_movies()
     new_movie = request.json
     movies.append(new_movie)
-    with open(DATA_FILE, 'w') as f:
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(movies, f, indent=2)
     return jsonify(new_movie), 201
 
 # Serve poster images
 @app.route('/POSTERS/<filename>')
 def get_poster(filename):
-    return send_from_directory('../LDB/POSTERS', filename)
+    return send_from_directory(POSTERS_DIR, filename)
+
+# Serve icons / tab icons
+@app.route('/icon/<filename>')
+def get_icon(filename):
+    return send_from_directory(POSTERS_DIR, filename)
 
 # Google Sign-In verification
 @app.route('/google-login', methods=['POST'])
@@ -72,6 +97,10 @@ def google_login():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-# Run the app
+# -------------------------------
+# Run the app (prod-ready)
+# -------------------------------
 if __name__ == '__main__':
-    app.run(debug=True)
+    # For Render, host=0.0.0.0 and port=os.environ.get('PORT')
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

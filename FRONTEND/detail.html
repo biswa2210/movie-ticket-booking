@@ -8,15 +8,46 @@
       background: #000;
       color: #fff;
       font-family: Arial, sans-serif;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      width: 90%;
+      max-width: 1200px;
+      margin: 40px auto;
+      gap: 40px;
+    }
+
+    .poster {
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .poster img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,0,0,0.5);
+    }
+
+    .details {
+      flex: 2;
     }
 
     h1 {
       color: #c00;
+      margin-bottom: 20px;
     }
 
     p {
       margin: 8px 0;
+      line-height: 1.5;
     }
 
     a {
@@ -31,7 +62,6 @@
       text-decoration: underline;
     }
 
-    /* Book button */
     #bookBtn {
       display: inline-block;
       margin-top: 20px;
@@ -48,30 +78,47 @@
     #bookBtn:hover {
       background: #a00;
     }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .poster, .details {
+        max-width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>{{ movie.Movie }}</h1>
-  <p><strong>Languages:</strong> {{ movie.PROP.LANGUAGE | join(', ') }}</p>
-  <p><strong>Release Date:</strong> {{ movie.PROP['RELEASE DATE'] }}</p>
-  <p><strong>Price:</strong> {{ movie.PROP.PRICE }}</p>
-  <p><strong>Cast:</strong> {{ movie.PROP.CAST | join(', ') }}</p>
-  <p><strong>Rating:</strong> {{ movie.PROP.RATING }}</p>
-  <p><strong>Category:</strong> {{ movie.PROP.CATEGORY }}</p>
+  <div class="container">
+    <!-- Poster Section -->
+    <div class="poster">
+      <img src="/POSTERS/{{ movie.PROP.POSTER }}" alt="{{ movie.Movie }} Poster">
+    </div>
 
-  <!-- Book Button -->
-  <button id="bookBtn" onclick="bookTicket()">Book Cinema</button>
+    <!-- Details Section -->
+    <div class="details">
+      <h1>{{ movie.Movie }}</h1>
+      <p><strong>Languages:</strong> {{ movie.PROP.LANGUAGE | join(', ') }}</p>
+      <p><strong>Release Date:</strong> {{ movie.PROP['RELEASE DATE'] }}</p>
+      <p><strong>Price:</strong> {{ movie.PROP.PRICE }}</p>
+      <p><strong>Cast:</strong> {{ movie.PROP.CAST | join(', ') }}</p>
+      <p><strong>Rating:</strong> {{ movie.PROP.RATING }}</p>
+      <p><strong>Category:</strong> {{ movie.PROP.CATEGORY }}</p>
 
-  <br>
-  <a href="/">⬅ Back to Home</a>
+      <button id="bookBtn" onclick="bookTicket()">Book Cinema</button>
+      <br>
+      <a href="/">⬅ Back to Home</a>
+    </div>
+  </div>
 
-  <!-- Firebase -->
+  <!-- Firebase & Booking Script -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
   <script>
-    // ✅ Firebase config (same as index.html)
     const firebaseConfig = {
       apiKey: "AIzaSyAuoqCQevT7qOCRpWxz6-S_JGTGyNNuwQo",
       authDomain: "movie-ticket-booking-6aa8d.firebaseapp.com",
@@ -86,61 +133,57 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // ✅ Booking function
-   function bookTicket() {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("⚠ Please sign in first on Home Page to book tickets.");
-    return;
-  }
+    function bookTicket() {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("⚠ Please sign in first on Home Page to book tickets.");
+        return;
+      }
 
-  const movieName = "{{ movie.Movie }}";
-  const price = "{{ movie.PROP.PRICE }}";
-  const category = "{{ movie.PROP.CATEGORY }}";
-  const releaseDate = "{{ movie.PROP['RELEASE DATE'] }}";
+      const movieName = "{{ movie.Movie }}";
+      const price = "{{ movie.PROP.PRICE }}";
+      const category = "{{ movie.PROP.CATEGORY }}";
+      const releaseDate = "{{ movie.PROP['RELEASE DATE'] }}";
 
-  const booking = {
-    userId: user.uid,
-    movie: movieName,
-    category: category,
-    releaseDate: releaseDate,
-    price: price,
-    seats: [], // extendable later
-    status: "reserved",
-    payment: "pay_at_counter",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
+      const booking = {
+        userId: user.uid,
+        movie: movieName,
+        category: category,
+        releaseDate: releaseDate,
+        price: price,
+        seats: [],
+        status: "reserved",
+        payment: "pay_at_counter",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
 
-  db.collection("bookings").add(booking)
-    .then(docRef => {
-      // ✅ Show popup
-      const popup = document.createElement("div");
-      popup.innerHTML = `
-        ✅ Booking successful! <br>
-        Movie: <strong>${movieName}</strong> <br>
-        Booking ID: ${docRef.id} <br>
-        Pay at counter.
-      `;
-      popup.style.position = "fixed";
-      popup.style.top = "20px";
-      popup.style.left = "50%";
-      popup.style.transform = "translateX(-50%)";
-      popup.style.background = "#0a0";
-      popup.style.color = "#fff";
-      popup.style.padding = "15px 25px";
-      popup.style.borderRadius = "10px";
-      popup.style.fontWeight = "bold";
-      popup.style.zIndex = 1000;
-      document.body.appendChild(popup);
-
-      setTimeout(() => popup.remove(), 5000); // auto remove after 5s
-    })
-    .catch(error => {
-      console.error(error);
-      alert("Booking failed: " + error.message);
-    });
-}
-
+      db.collection("bookings").add(booking)
+        .then(docRef => {
+          const popup = document.createElement("div");
+          popup.innerHTML = `
+            ✅ Booking successful! <br>
+            Movie: <strong>${movieName}</strong> <br>
+            Booking ID: ${docRef.id} <br>
+            Pay at counter.
+          `;
+          popup.style.position = "fixed";
+          popup.style.top = "20px";
+          popup.style.left = "50%";
+          popup.style.transform = "translateX(-50%)";
+          popup.style.background = "#0a0";
+          popup.style.color = "#fff";
+          popup.style.padding = "15px 25px";
+          popup.style.borderRadius = "10px";
+          popup.style.fontWeight = "bold";
+          popup.style.zIndex = 1000;
+          document.body.appendChild(popup);
+          setTimeout(() => popup.remove(), 5000);
+        })
+        .catch(error => {
+          console.error(error);
+          alert("Booking failed: " + error.message);
+        });
+    }
   </script>
 </body>
 </html>
