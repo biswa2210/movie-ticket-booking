@@ -13,14 +13,7 @@ STATIC_DIR = FRONTEND_DIR
 DATA_FILE = os.path.join(BASE_DIR, '../LDB/movies.json')
 POSTERS_DIR = os.path.join(BASE_DIR, '../LDB/POSTERS')
 
-# Load Firebase service account from env variable
-firebase_service_account_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
-if not firebase_service_account_json:
-    raise Exception("FIREBASE_SERVICE_ACCOUNT env variable not set!")
 
-cred_dict = json.loads(firebase_service_account_json)
-cred = credentials.Certificate(cred_dict)
-firebase_admin.initialize_app(cred)
 
 # -------------------------------
 # Initialize Flask app
@@ -30,7 +23,13 @@ app = Flask(__name__, template_folder=FRONTEND_DIR, static_folder=STATIC_DIR)
 # -------------------------------
 # Initialize Firebase Admin SDK
 # -------------------------------
-cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+# Load Firebase service account from env variable
+firebase_service_account_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
+if not firebase_service_account_json:
+    raise Exception("FIREBASE_SERVICE_ACCOUNT env variable not set!")
+
+cred_dict = json.loads(firebase_service_account_json)
+cred = credentials.Certificate(cred_dict)
 firebase_admin.initialize_app(cred)
 
 # -------------------------------
