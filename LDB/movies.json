@@ -1,0 +1,105 @@
+[
+  {
+    "Movie": "Inception",
+    "PROP": {
+      "LANGUAGE": [
+        "English",
+        "Hindi"
+      ],
+      "RELEASE DATE": "2010-07-16T00:00:00",
+      "PRICE": 250,
+      "CAST": [
+        "Leonardo DiCaprio",
+        "Joseph Gordon-Levitt"
+      ],
+      "RATING": 8.8,
+      "CATEGORY": "Thriller",
+      "POSTER": "inception.jpg"
+    }
+  },
+  {
+    "Movie": "The Conjuring",
+    "PROP": {
+      "LANGUAGE": [
+        "English"
+      ],
+      "RELEASE DATE": "2013-07-19T00:00:00",
+      "PRICE": 200,
+      "CAST": [
+        "Vera Farmiga",
+        "Patrick Wilson"
+      ],
+      "RATING": 7.5,
+      "CATEGORY": "Horror",
+      "POSTER": "the_conjuring.jpg"
+    }
+  },
+  {
+    "Movie": "Interstellar",
+    "PROP": {
+      "LANGUAGE": [
+        "English"
+      ],
+      "RELEASE DATE": "2014-11-07T00:00:00",
+      "PRICE": 300,
+      "CAST": [
+        "Matthew McConaughey",
+        "Anne Hathaway"
+      ],
+      "RATING": 8.6,
+      "CATEGORY": "Sci-Fi",
+      "POSTER": "interstellar.jpg"
+    }
+  },
+  {
+    "Movie": "Annabelle",
+    "PROP": {
+      "LANGUAGE": [
+        "English"
+      ],
+      "RELEASE DATE": "2014-10-03T00:00:00",
+      "PRICE": 180,
+      "CAST": [
+        "Annabelle Wallis",
+        "Ward Horton"
+      ],
+      "RATING": 6.5,
+      "CATEGORY": "Horror",
+      "POSTER": "annabelle.jpg"
+    }
+  },
+  {
+    "Movie": "The Mask",
+    "PROP": {
+      "LANGUAGE": [
+        "English"
+      ],
+      "RELEASE DATE": "1994-07-29T00:00:00",
+      "PRICE": 150,
+      "CAST": [
+        "Jim Carrey",
+        "Cameron Diaz"
+      ],
+      "RATING": 6.9,
+      "CATEGORY": "Comedy",
+      "POSTER": "the_mask.jpg"
+    }
+  },
+  {
+    "Movie": "Jumanji: Welcome to the Jungle",
+    "PROP": {
+      "LANGUAGE": [
+        "English"
+      ],
+      "RELEASE DATE": "2017-12-20T00:00:00",
+      "PRICE": 220,
+      "CAST": [
+        "Dwayne Johnson",
+        "Kevin Hart"
+      ],
+      "RATING": 7.0,
+      "CATEGORY": "Comedy",
+      "POSTER": "jumanji.jpg"
+    }
+  }
+]

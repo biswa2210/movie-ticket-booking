@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ movie.Movie }} Details</title>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #c00;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      color: #c00;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Book button */
+    #bookBtn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #c00;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #bookBtn:hover {
+      background: #a00;
+    }
+  </style>
+</head>
+<body>
+  <h1>{{ movie.Movie }}</h1>
+  <p><strong>Languages:</strong> {{ movie.PROP.LANGUAGE | join(', ') }}</p>
+  <p><strong>Release Date:</strong> {{ movie.PROP['RELEASE DATE'] }}</p>
+  <p><strong>Price:</strong> {{ movie.PROP.PRICE }}</p>
+  <p><strong>Cast:</strong> {{ movie.PROP.CAST | join(', ') }}</p>
+  <p><strong>Rating:</strong> {{ movie.PROP.RATING }}</p>
+  <p><strong>Category:</strong> {{ movie.PROP.CATEGORY }}</p>
+
+  <!-- Book Button -->
+  <button id="bookBtn" onclick="bookTicket()">Book Cinema</button>
+
+  <br>
+  <a href="/">⬅ Back to Home</a>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    // ✅ Firebase config (same as index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAuoqCQevT7qOCRpWxz6-S_JGTGyNNuwQo",
+      authDomain: "movie-ticket-booking-6aa8d.firebaseapp.com",
+      projectId: "movie-ticket-booking-6aa8d",
+      storageBucket: "movie-ticket-booking-6aa8d.appspot.com",
+      messagingSenderId: "1056826036124",
+      appId: "1:1056826036124:web:17cfb5524eb02154e04259",
+      measurementId: "G-T9LH5V6XSX"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ✅ Booking function
+   function bookTicket() {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("⚠ Please sign in first on Home Page to book tickets.");
+    return;
+  }
+
+  const movieName = "{{ movie.Movie }}";
+  const price = "{{ movie.PROP.PRICE }}";
+  const category = "{{ movie.PROP.CATEGORY }}";
+  const releaseDate = "{{ movie.PROP['RELEASE DATE'] }}";
+
+  const booking = {
+    userId: user.uid,
+    movie: movieName,
+    category: category,
+    releaseDate: releaseDate,
+    price: price,
+    seats: [], // extendable later
+    status: "reserved",
+    payment: "pay_at_counter",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  db.collection("bookings").add(booking)
+    .then(docRef => {
+      // ✅ Show popup
+      const popup = document.createElement("div");
+      popup.innerHTML = `
+        ✅ Booking successful! <br>
+        Movie: <strong>${movieName}</strong> <br>
+        Booking ID: ${docRef.id} <br>
+        Pay at counter.
+      `;
+      popup.style.position = "fixed";
+      popup.style.top = "20px";
+      popup.style.left = "50%";
+      popup.style.transform = "translateX(-50%)";
+      popup.style.background = "#0a0";
+      popup.style.color = "#fff";
+      popup.style.padding = "15px 25px";
+      popup.style.borderRadius = "10px";
+      popup.style.fontWeight = "bold";
+      popup.style.zIndex = 1000;
+      document.body.appendChild(popup);
+
+      setTimeout(() => popup.remove(), 5000); // auto remove after 5s
+    })
+    .catch(error => {
+      console.error(error);
+      alert("Booking failed: " + error.message);
+    });
+}
+
+  </script>
+</body>
+</html>

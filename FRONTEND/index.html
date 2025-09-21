@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Library</title>
+  <style>
+
+
+    /* All Movies */
+.card-container{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;               /* space between cards */
+  padding: 30px;
+}
+
+/* Card style */
+.card {
+  background: #111;
+  border: 1px solid #c00;
+  border-radius: 12px;
+  padding: 15px;
+  min-width: 220px;        /* minimum card width */
+  max-width: 300px;        /* optional: limit stretching */
+  box-sizing: border-box;
+  transition: transform 0.2s;
+}
+#myBookings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 30px;
+  justify-content: center; /* center grid on wide screens */
+  max-width: 1200px; /* optional: limits container width */
+  margin: 0 auto;     /* centers the container */
+}
+
+.booking-card {
+  background: #111;
+  border: 1px solid #c00;
+  border-radius: 12px;
+  padding: 18px;
+  color: #fff;
+  min-width: 220px;
+  min-height: 160px;
+  box-shadow: 0 2px 8px #0003;
+  transition: transform 0.2s;
+}
+.booking-card[style*="opacity:0.6"] {
+  background: #333;
+}
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 15px 25px;
+      background: #111;
+      border-bottom: 2px solid #c00;
+      position: relative;
+    }
+
+    #searchBar {
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid #c00;
+      background: #1a1a1a;
+      color: #fff;
+      outline: none;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      background: #222;
+      border-bottom: 2px solid #c00;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    main {
+      padding: 30px;
+    }
+
+    main h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #c00;
+    }
+
+
+
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-bottom: 1px solid #c00;
+    }
+
+    .card h3 {
+      margin: 15px 0 10px;
+      color: #fff;
+    }
+
+    .card p {
+      margin: 0 0 15px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .card a {
+      display: inline-block;
+      padding: 8px 16px;
+      background: #c00;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    /* Theme toggle */
+    #themeToggle {
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: 2px solid #c00;
+      background: #fff;
+      cursor: pointer;
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+    }
+
+    /* Google Sign-In Button */
+    #googleSignInBtn {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      background-color: #db4437;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #googleSignInBtn img {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      background: white;
+      border-radius: 50%;
+      padding: 2px;
+    }
+
+    #googleSignInBtn:hover {
+      background-color: #c1351d;
+    }
+
+    /* Welcome message + Sign out */
+    #welcomeContainer {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #welcomeMsg {
+      font-weight: bold;
+      color: #fff;
+    }
+
+    #signOutBtn {
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #signOutBtn:hover {
+      background: #666;
+    }
+
+    @media (max-width: 500px) {
+  #myBookings {
+    grid-template-columns: 1fr; /* single column on very small screens */
+    padding: 15px;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <!-- Header with Search Bar -->
+  <header>
+    <!-- Google Login -->
+    <button id="googleSignInBtn" onclick="googleSignIn()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+      Sign in with Google
+    </button>
+    <div id="welcomeContainer" style="display:none;">
+      <span id="welcomeMsg"></span>
+      <button id="signOutBtn" onclick="signOut()">Sign Out</button>
+    </div>
+
+    <!-- Search -->
+    <input type="text" id="searchBar" placeholder="Search movies...">
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <ul>
+      <li><a href="#" onclick="showAll()">All</a></li>
+      {% for category in categories %}
+      <li><a href="#" onclick="filterCategory('{{ category }}')">{{ category }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <h1>All Movies</h1>
+    <div class="card-container">
+      {% for movie in movies %}
+      <div class="card" data-category="{{ movie.PROP.CATEGORY }}" data-title="{{ movie.Movie|lower }}">
+        <img src="{{ url_for('get_poster', filename=movie.PROP.POSTER.split('/')[-1]) }}" alt="{{ movie.Movie }}">
+        <h3>{{ movie.Movie }}</h3>
+        <p>Rating: {{ movie.PROP.RATING }}</p>
+        <a href="/movie/{{ movie.Movie }}">View Details</a>
+      </div>
+      {% endfor %}
+    </div>
+    <hr>
+    <h1>All My-Bookings</h1>
+<div id="myBookings" style="padding: 30px;"></div>
+     <!-- ✅ My Bookings Section
+     <h2 style="margin-top:50px; color:#c00;">My Bookings</h2>
+  <div id="myBookings" style="background:#111; padding:15px; border:1px solid #c00; border-radius:10px;">
+    Loading your bookings...
+  </div> -->
+  </main>
+
+  <!-- Theme Toggle -->
+  <input type="radio" id="themeToggle">
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    // Category Filter
+    function filterCategory(cat) {
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.display = card.dataset.category === cat ? 'block' : 'none';
+      });
+    }
+
+    // Show All
+    function showAll() {
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.display = 'block';
+      });
+    }
+
+    // Search Functionality
+    document.getElementById("searchBar").addEventListener("keyup", function() {
+      let query = this.value.toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        let title = card.dataset.title;
+        card.style.display = title.includes(query) ? 'block' : 'none';
+      });
+    });
+
+    // Theme Toggle
+    const themeToggle = document.getElementById("themeToggle");
+    let dark = true;
+    themeToggle.addEventListener("click", () => {
+      if (dark) {
+        document.body.style.background = "#fff";
+        document.body.style.color = "#000";
+        document.querySelectorAll('.card').forEach(card => {
+          card.style.background = "#f9f9f9";
+          card.style.color = "#000";
+        });
+        themeToggle.style.background = "#000";
+      } else {
+        document.body.style.background = "#000";
+        document.body.style.color = "#fff";
+        document.querySelectorAll('.card').forEach(card => {
+          card.style.background = "#111";
+          card.style.color = "#fff";
+        });
+        themeToggle.style.background = "#fff";
+      }
+      dark = !dark;
+    });
+  </script>
+
+  <!-- Firebase App (core) -->
+  <!-- Firebase App -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<!-- Firebase Auth -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAuoqCQevT7qOCRpWxz6-S_JGTGyNNuwQo",
+    authDomain: "movie-ticket-booking-6aa8d.firebaseapp.com",
+    projectId: "movie-ticket-booking-6aa8d",
+    storageBucket: "movie-ticket-booking-6aa8d.appspot.com",
+    messagingSenderId: "1056826036124",
+    appId: "1:1056826036124:web:17cfb5524eb02154e04259",
+    measurementId: "G-T9LH5V6XSX"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore(); // ✅ Important!
+
+  // Google Sign-In
+  function googleSignIn() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then(result => showWelcome(result.user.displayName))
+      .catch(err => alert("Sign-in failed: " + err.message));
+  }
+
+  function signOut() {
+    auth.signOut().then(() => {
+      document.getElementById("googleSignInBtn").style.display = "flex";
+      document.getElementById("welcomeContainer").style.display = "none";
+      document.getElementById("myBookings").innerHTML = "Sign in to see your bookings.";
+    });
+  }
+
+  function showWelcome(name) {
+    document.getElementById("googleSignInBtn").style.display = "none";
+    document.getElementById("welcomeMsg").innerHTML = `Welcome, <strong>${name}</strong>`;
+    document.getElementById("welcomeContainer").style.display = "flex";
+  }
+
+  // Load My Bookings
+ // Load My Bookings
+// Load My Bookings with Cancel Button (supports marking as Cancelled)
+function loadMyBookings() {
+  const user = auth.currentUser;
+  const container = document.getElementById("myBookings");
+
+  if (!user) {
+    container.innerHTML = "Sign in to see your bookings.";
+    return;
+  }
+
+  container.innerHTML = "Loading your bookings...";
+
+  db.collection("bookings")
+    .where("userId", "==", user.uid)
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        container.innerHTML = "You have no bookings yet.";
+        return;
+      }
+
+      let html = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+
+        const movie = data.movie || "Unknown Movie";
+        const category = data.category || "N/A";
+        const price = data.price || "N/A";
+        const status = data.status || "N/A";
+        const seats = data.seats && data.seats.length ? data.seats.join(", ") : "None";
+
+        // If status is Cancelled, gray out the card and disable button
+        const isCancelled = status.toLowerCase() === "cancelled";
+        const cardStyle = isCancelled ? "opacity:0.6; pointer-events:none;" : "";
+        const buttonHTML = isCancelled ?
+          `<span style="color:#ccc; font-weight:bold;">Cancelled</span>` :
+          `<button onclick="cancelBooking('${doc.id}')" style="margin-top:5px; padding:5px 10px; border:none; border-radius:5px; background:#c00; color:#fff; cursor:pointer;">
+            Cancel Booking
+          </button>`;
+
+        html += `
+          <div id="booking-${doc.id}" class="booking-card" style="${cardStyle}">
+            <strong>${movie}</strong><br>
+            Category: ${category}<br>
+            Price: ${price}<br>
+            Seats: ${seats}<br>
+            Status: ${status}<br>
+            ${buttonHTML}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    })
+    .catch(err => {
+      console.error("Error loading bookings:", err);
+      container.innerHTML = "Error loading bookings. Check console for details.";
+    });
+}
+
+// Cancel Booking (mark as Cancelled)
+function cancelBooking(bookingId) {
+  if (!confirm("Are you sure you want to cancel this booking?")) return;
+
+  db.collection("bookings").doc(bookingId)
+    .update({ status: "Cancelled" })
+    .then(() => {
+      const bookingDiv = document.getElementById(`booking-${bookingId}`);
+      if (bookingDiv) {
+        bookingDiv.style.opacity = "0.6";
+        bookingDiv.style.pointerEvents = "none";
+        bookingDiv.querySelector("button").outerHTML = `<span style="color:#ccc; font-weight:bold;">Cancelled</span>`;
+        bookingDiv.querySelector("div, span, strong"); // update status text
+        bookingDiv.innerHTML = bookingDiv.innerHTML.replace(/Status:.*<br>/, "Status: Cancelled<br>");
+      }
+      alert("Booking marked as Cancelled.");
+    })
+    .catch(err => {
+      console.error("Error cancelling booking:", err);
+      alert("Failed to cancel booking. Check console for details.");
+    });
+}
+
+
+
+  // ✅ Only one auth state listener
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      showWelcome(user.displayName || user.email);
+      loadMyBookings();
+    } else {
+      document.getElementById("myBookings").innerHTML = "Sign in to see your bookings.";
+    }
+  });
+</script>
+
+</body>
+</html>
